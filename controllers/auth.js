@@ -18,8 +18,8 @@ const register = async (req, res) => {
 
   const newUser = await User.create({ ...req.body, password: hashPassword });
   res.status(201).json({
-    password: newUser.password,
     email: newUser.email,
+    subscription: newUser.subscription,
   });
 };
 
@@ -38,11 +38,33 @@ const logIn = async (req, res) => {
   const payload = { id: user._id };
 
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
+  await User.findByIdAndUpdate(user._id, { token });
+  res.json({
+    token: token,
+    user: {
+      email: user.email,
+      subscription: user.subscription,
+    },
+  });
+};
 
-  res.json({ token });
+const getCurrent = async (req, res) => {
+  const { email, subscription } = req.user;
+
+  res.json({ email, subscription });
+};
+
+const logOut = async (req, res) => {
+  const { _id } = req.user;
+  await User.findByIdAndUpdate(_id, { token: "" });
+  res.json({
+    message: "Logut succes",
+  });
 };
 
 module.exports = {
   register: ctrlWrapper(register),
   logIn: ctrlWrapper(logIn),
+  getCurrent: ctrlWrapper(getCurrent),
+  logOut: ctrlWrapper(logOut),
 };
