@@ -15,14 +15,14 @@ router.get("/", ctrl.getAll);
 
 router.get("/:contactId", isValidId, ctrl.getById);
 
-router.post("/", validateBody(schemas.addSchema), ctrl.add);
+router.post("/", validateBody(schemas.addContact), ctrl.add);
 
 router.delete("/:contactId", isValidId, ctrl.remove);
 
 router.put(
   "/:contactId",
   isValidId,
-  validateBody(schemas.addSchema),
+  validateBody(schemas.addContact),
   ctrl.update
 );
 
